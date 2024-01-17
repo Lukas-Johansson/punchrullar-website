@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Punchrullar Counter</title>
+</head>
+<body>
+  <h1>Punchrullar Counter</h1>
+  <p>Remaining Punchrullar: <span id="remainingCount">Loading...</span></p>
+  <button onclick="updateCount('add')">Add Punchrullar</button>
+  <button onclick="updateCount('remove')">Remove Punchrullar</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    async function updateCount(action) {
+      try {
+        const response = await axios.get('http://localhost:3000/punchrullar');
+
+        if (!response.data) {
+          throw new Error('Unable to fetch punchrullar data');
+        }
+
+        let newCount;
+
+        if (action === 'add') {
+          newCount = response.data.remaining + 1;
+        } else if (action === 'remove') {
+          newCount = Math.max(0, response.data.remaining - 1);
+        }
+
+        const updateResponse = await axios.post('http://localhost:3000/punchrullar/update', {
+          newCount,
+        });
+
+        if (!updateResponse.data) {
+          throw new Error('Unable to update punchrullar count');
+        }
+
+        document.getElementById('remainingCount').innerText = updateResponse.data.data.remaining;
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
+
+    async function initialize() {
+      try {
+        const response = await axios.get('http://localhost:3000/punchrullar');
+
+        if (!response.data) {
+          throw new Error('Unable to fetch punchrullar data');
+        }
+
+        document.getElementById('remainingCount').innerText = response.data.remaining;
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
