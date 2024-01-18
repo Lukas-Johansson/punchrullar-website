@@ -15,7 +15,7 @@
   <script>
     async function updateCount(action) {
       try {
-        const response = await axios.get('http://localhost:3000/punchrullar');
+        const response = await axios.get('http://localhost:3001/punchrullar');
 
         if (!response.data) {
           throw new Error('Unable to fetch punchrullar data');
@@ -29,7 +29,7 @@
           newCount = Math.max(0, response.data.remaining - 1);
         }
 
-        const updateResponse = await axios.post('http://localhost:3000/punchrullar/update', {
+        const updateResponse = await axios.post('http://localhost:3001/punchrullar/update', {
           newCount,
         });
 
@@ -45,7 +45,7 @@
 
     async function initialize() {
       try {
-        const response = await axios.get('http://localhost:3000/punchrullar');
+        const response = await axios.get('http://localhost:3001/punchrullar');
 
         if (!response.data) {
           throw new Error('Unable to fetch punchrullar data');
