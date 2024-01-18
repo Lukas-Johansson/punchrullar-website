@@ -7,7 +7,7 @@ const port = 3000;
 
 let data = JSON.parse(fs.readFileSync('punchrullar.json', 'utf8'));
 
-app.use(cors()); // Enable CORS middleware
+app.use(cors()); 
 app.use(express.json());
 
 app.get('/', (req, res) => {
