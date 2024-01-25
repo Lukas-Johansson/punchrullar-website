@@ -18,14 +18,17 @@ app.get('/punchrullar', (req, res) => {
   res.json(data);
 });
 
+app.get('/punchrullar', async (req, res) => {
+  const [rows] = await pool.query('SELECT * FROM punchrullar');
+  res.json(rows);
+});
+
 app.post('/punchrullar/update', (req, res) => {
   const { newCount } = req.body;
-
+  
   if (newCount !== undefined && typeof newCount === 'number') {
     data.remaining = newCount;
-
     fs.writeFileSync('punchrullar.json', JSON.stringify(data), 'utf8');
-
     res.json({ message: 'Punchrullar count updated successfully', data });
   } else {
     res.status(400).json({ error: 'Invalid request. Please provide a valid "newCount" parameter.' });

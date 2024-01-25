@@ -11,30 +11,16 @@
   <button onclick="updateCount('add')">Add Punchrullar</button>
   <button onclick="updateCount('remove')">Remove Punchrullar</button>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  
+
   <script>
     async function updateCount(action) {
       try {
-        const response = await axios.get('http://localhost:3001/punchrullar');
-
-        if (!response.data) {
-          throw new Error('Unable to fetch punchrullar data');
-        }
-
-        let newCount;
-
-        if (action === 'add') {
-          newCount = response.data.remaining + 1;
-        } else if (action === 'remove') {
-          newCount = Math.max(0, response.data.remaining - 1);
-        }
-
-        const updateResponse = await axios.post('http://localhost:3001/punchrullar/update', {
-          newCount,
+        const updateResponse = await axios.post('http://jupiter.umea-ntig.se:3001/punchrullar/update', {
+          action, // Add the action parameter
         });
 
         if (!updateResponse.data) {
-          throw new Error('Unable to update punchrullar count');
+          throw new Error('Unable to update Punchrullar count');
         }
 
         document.getElementById('remainingCount').innerText = updateResponse.data.data.remaining;
@@ -45,12 +31,10 @@
 
     async function initialize() {
       try {
-        const response = await axios.get('http://localhost:3001/punchrullar');
-
+        const response = await axios.get('http://jupiter.umea-ntig.se:3001/punchrullar/count');
         if (!response.data) {
-          throw new Error('Unable to fetch punchrullar data');
+          throw new Error('Unable to fetch Punchrullar data');
         }
-
         document.getElementById('remainingCount').innerText = response.data.remaining;
       } catch (error) {
         console.error(error.message);
