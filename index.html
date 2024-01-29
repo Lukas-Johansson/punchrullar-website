@@ -16,7 +16,7 @@
     async function updateCount(action) {
       try {
         const updateResponse = await axios.post('http://jupiter.umea-ntig.se:4200/punchrullar/update', {
-          action, // Add the action parameter
+          action
         });
 
         if (!updateResponse.data) {

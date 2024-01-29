@@ -6,7 +6,15 @@ const pool = require('./db')
 const app = express()
 const port = process.env.PORT || 3001
 
-app.use(cors();
+var bodyParser = require('body-parser')
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
+app.use(cors());
 
 app.get('/punchrullar/count', (req, res) => {
   pool.query('SELECT remaining FROM punchrullar', (error, results) => {
@@ -29,18 +37,31 @@ app.get('/punchrullar/count', (req, res) => {
 
 app.post('/punchrullar/update', (req, res) => {
   const { action } = req.body;
-
   if (action === 'add' || action === 'remove') {
-    const sqlQuery = action === 'add' ? 'UPDATE punchrullar SET remaining = remaining + 1' : 'UPDATE punchrullar SET remaining = GREATEST(0, remaining - 1)';
+    const remainingChange = action === 'add' ? 1 : -1;
+    const sqlQuery = 'INSERT INTO punchrullar (remaining, timetable) VALUES (?, CURRENT_TIMESTAMP);';
 
-    pool.query(sqlQuery, (error, results) => {
+    pool.query(sqlQuery, [remainingChange], (error, results) => {
       if (error) {
-        console.error('Error updating Punchrullar count:', error);
+        console.error('Error creating new timetable:', error);
         res.status(500).json({ error: 'Internal Server Error' });
       } else {
-        pool.query('SELECT * FROM punchrullar', (fetchError, fetchResults) => {
+        pool.query('SELECT * FROM punchrullar ORDER BY timetable DESC LIMIT 1', (fetchError, fetchResults) => {
           if (fetchError) {
             console.error('Error fetching updated Punchrullar count:', fetchError);
             res.status(500).json({ error: 'Internal Server Error' });
           } else {
             res.json({ message: `Punchrullar count ${action === 'add' ? 'added' : 'removed'} successfully`, data: fetchResults[0] });
+          }
+        });
+      }
+    });
+  } else {
+    res.status(400).json({ error: 'Invalid request. Please provide a valid "action" parameter.' });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http:localhost:${port}`);
+});
+
