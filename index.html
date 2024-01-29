@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Punchrullar Counter</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
   <h1>Punchrullar Counter</h1>
   <p>Remaining Punchrullar: <span id="remainingCount">Loading...</span></p>
   <button onclick="updateCount('add')">Add Punchrullar</button>
   <button onclick="updateCount('remove')">Remove Punchrullar</button>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
     async function updateCount(action) {
       try {
-        const updateResponse = await axios.post('http://jupiter.umea-ntig.se:3001/punchrullar/update', {
+        const updateResponse = await axios.post('http://jupiter.umea-ntig.se:4200/punchrullar/update', {
           action, // Add the action parameter
         });
 
@@ -23,6 +23,7 @@
           throw new Error('Unable to update Punchrullar count');
         }
 
+        // Update the remaining count on the page
         document.getElementById('remainingCount').innerText = updateResponse.data.data.remaining;
       } catch (error) {
         console.error(error.message);
@@ -31,7 +32,7 @@
 
     async function initialize() {
       try {
-        const response = await axios.get('http://jupiter.umea-ntig.se:3001/punchrullar/count');
+        const response = await axios.get('http://jupiter.umea-ntig.se:4200/punchrullar/count');
         if (!response.data) {
           throw new Error('Unable to fetch Punchrullar data');
         }
